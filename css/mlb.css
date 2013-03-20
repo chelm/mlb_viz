@@ -78,13 +78,13 @@ body{
   float: right;
   width: 40px;
   font-size:12pt;
-  color:#DDD;
+  color:#d50032;
 }
 
 #payroll-title {
   float:left;
   font-size:12pt;
-  color:#DDD;
+  color:#d50032;
 }
 
 #salary {
@@ -119,7 +119,7 @@ body{
 #salary-title {
   float:left;
   font-size:12pt;
-  color:#DDD;
+  color:#d50032;
 }
 
 #player-name {
