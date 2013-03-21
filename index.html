@@ -13,12 +13,12 @@
         parseOnLoad: true,
         packages: [{
           "name": "modules",
-          "location": location.origin + location.pathname.replace(/\/[^/]+$/, '')
+          "location": location.href
         }]
       };
     </script>
    
-    <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/"></script>
+    <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
     <script src="http://d3js.org/d3.v3.min.js"></script>
     
     <script>
