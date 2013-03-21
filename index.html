@@ -70,27 +70,13 @@
       dojo.require("modules.d3Layer");
 
       dojo.ready(function(){
-  
-        var initExtent = new esri.geometry.Extent({
-          "xmin":-132,
-          "ymin":20,
-          "xmax":-60,
-          "ymax":50,
-          "spatialReference": { 
-            "wkid": 4326
-          }
-        });
         
         map = new esri.Map("map",{
-          extent:esri.geometry.geographicToWebMercator(initExtent)
+          basemap: "gray",
+          center: [-96, 36.428],
+          zoom: 4
         });
 
-        var basemap = new esri.layers.ArcGISTiledMapServiceLayer(
-          "http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer");
-          //"http://services.arcgisonline.com/ArcGIS/rest/services/Specialty/DeLorme_World_Base_Map/MapServer");
-
-        map.addLayer(basemap); 
-        
         layer = new modules.d3Layer('data/mlb_salaries.json', {
           attrs: [
             { key: 'r', value: function(d){ return payroll(d.properties.team.payroll); } },
@@ -288,6 +274,20 @@
           });
         });
 
+    </script>
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-39496906-1']);
+      _gaq.push(['_trackPageview']);
+    
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    
     </script>
   </head>
   <body class="tundra">
