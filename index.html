@@ -87,6 +87,21 @@
         }); 
         map.addLayer(layer);
 
+        d3.select('body').append('div')
+          .attr('id', 'show-hide')
+          .attr('class', 'btn')
+          .text('Show All')
+          .on('click', function( ){
+            var el = d3.select( this );
+            if ( el.text() == 'Show All'){
+              el.text('Hide All');
+              d3.selectAll('.park')[0].forEach(function(d){ select(d3.select(d).data()[0]); })
+            } else {
+              el.text('Show All');
+              d3.selectAll('.park')[0].forEach(function(d){ unselect(d3.select(d).data()[0]); })
+            }
+          });
+
         dojo.connect( map, "onZoomEnd", function(){
           setTimeout(function(){
           d3.selectAll('.park')[0].forEach(function( park ){
@@ -167,18 +182,29 @@
             
             d3.selectAll('.park')
               .on('click', function( dot ){
+                select( dot );
+              });
 
-                if (d3.select('#' + dot.properties.team.city.replace(' ',''))[0][0] ) {
-                  d3.select('#' + dot.properties.team.city.replace(' ','')).style('display', 'block');
-                } else { 
-                  var selected = d3.select(this)[0][0];
+            unselect = function( dot ){
+              d3.select('#' + dot.properties.team.city.replace(' ','')).style('display', 'none');
+            }
+
+            select = function( dot ){
+                var id = dot.properties.team.name.replace(/\s/g,'');
+                var city = dot.properties.team.city.replace(/\s/g,'');
+                
+                if (d3.select('#' + city)[0][0] ) {
+                  d3.select('#' + city).style('display', 'block');
+                  if (forces[ id ]) forces[ id ].start();
+                } else {
+                  var selected = d3.select('#' + id)[0][0];
 
                   var force = d3.layout.force()
                     .on("tick", tick)
                     
                   var vis = lyr._element().append("g")
                       .attr('class', 'hover-force')
-                      .attr('id', dot.properties.team.city.replace(' ', ''));
+                      .attr('id', city);
                   
                   var root = dot.properties;
                     root.fixed = true;
@@ -188,7 +214,7 @@
                   var nodes = flatten(root),
                     links = d3.layout.tree().links(nodes);
                     
-                  forces[ dot.properties.team.name.replace(/\s/g,'') ] = force
+                  forces[ id ] = force
                       .gravity(.01) 
                       .charge(-75)
                       .linkStrength(5)
@@ -270,7 +296,7 @@
                   return nodes;
                 }
                 
-            });
+            }
           });
         });
 
@@ -324,5 +350,8 @@
         </div>
       </div>
     </div>
+    <!--div id="show_hide" style="position:absolute; bottom:10px; left: 10px; z-index:1">
+      <span class='btn grp_button'> Show All </span>
+    </div-->
   </body>
 </html>

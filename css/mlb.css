@@ -160,3 +160,10 @@ line.link {
   stroke-width: 6px;
   cursor:pointer;
 }
+
+#show-hide {
+  position:absolute; 
+  bottom:200px; 
+  left: 10px; 
+  z-index:1;
+}
