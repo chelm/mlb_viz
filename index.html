@@ -122,23 +122,8 @@
 
             d3.selectAll('.park')
               .on('mouseover', function( dot ){
-                
-                var img = '<img src="img/' + dot.properties.team.name.replace(/\s/g,'') + '.gif"></img>';
-                
-                d3.select('#payroll').style('display', 'block');
                 d3.select('#salary').style('display', 'none');
-                d3.select('#intro').remove();
-                var num = dot.properties.team.payroll;
-                var str = getAmount(num.toString().length);
-                
-                d3.select('#team-logo')
-                  .html(img)
-                d3.select('#team-name')
-                  .html('<h1>' + dot.properties.team.name + '</h1>');
-                d3.select('#team-payroll')
-                  .html('$' + addCommas(dot.properties.team.payroll).split(',')[0] + ' ' +str);
-                d3.select('#team-payroll-rank')
-                 .html( ranks[ dot.properties.team.name ] );
+                showTeam(dot);
               })
               .on('mouseout', function( dot ){
                 setTimeout(function(){
@@ -149,6 +134,26 @@
                 }, 3000);
               });
 
+            //show team
+            function showTeam( dot ) {
+              var team = (dot.properties) ? dot.properties.team : dot.team;
+              var img = '<img src="img/' + team.name.replace(/\s/g,'') + '.gif"></img>';
+                
+              d3.select('#payroll').style('display', 'block');
+              d3.select('#intro').remove();
+              var num = team.payroll;
+              var str = getAmount(num.toString().length);
+              
+              d3.select('#team-logo')
+                .html(img)
+              d3.select('#team-name')
+                .html('<h1>' + team.name + '</h1>');
+              d3.select('#team-payroll')
+                .html('$' + addCommas(team.payroll).split(',')[0] + ' ' +str);
+              d3.select('#team-payroll-rank')
+               .html( ranks[ team.name ] );  
+            }
+            
             //add commas
             function addCommas(nStr) {
               nStr += '';
@@ -244,10 +249,10 @@
                         .style("fill", color)
                         .call(force.drag)
                         .on('mousedown', function(d) {
-                          if (d.team && d.team.city) d3.select('#' + d.team.city.replace(' ','')).style('display', 'none');
+                          if ( !d.name ) d3.select('#' + d.team.city.replace(' ','')).style('display', 'none');
                         })
                         .on('mouseover', function( dot ){
-                          if ( !dot.team ) {
+                          if ( dot.name ) {
                             var num = dot.salary;
                             var str = getAmount(num.toString().length);
                             
@@ -258,8 +263,8 @@
                             
                             d3.select('#player-salary')
                               .html('$' + addCommas(dot.salary).split(',')[0] + ' ' + str);
-                            
-                          }
+                          } 
+                          showTeam( dot )
                         });
                 } 
                 
@@ -284,14 +289,16 @@
                 // Returns a list of all nodes under the root.
                 function flatten(root) {
                   var nodes = [], i = 0;
-                
+                  var team = root.team;
+                  
                   function recurse(node) {
                     if (node.children) node.salary = node.children.reduce(function(p, v) { return p + recurse(v); }, 0);
                     if (!node.id) node.id = ++i;
+                    if (!node.team) node.team = team;
                     nodes.push(node);
                     return node.salary;
                   }
-                
+                  
                   root.salary = recurse(root);
                   return nodes;
                 }
