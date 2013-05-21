@@ -28,9 +28,12 @@ dojo.declare("modules.d3Layer", esri.layers.GraphicsLayer, {
 
     _load: function(){
       var self = this;
+      
       d3.json( this.url, function( geojson ){
         self.geojson = geojson;
-        self.bounds = d3.geo.bounds( self.geojson );
+        //TODO commented this out because it was breaking - is it needed? 
+        //self.bounds = d3.geo.bounds( self.geojson );
+        
         self.loaded = true;
         // TODO the onLoad event fires too soon, have to wait until the DOM is created
         setTimeout(function(){ 
