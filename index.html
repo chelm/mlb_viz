@@ -13,11 +13,11 @@
         parseOnLoad: true,
         packages: [{
           "name": "modules",
-          "location": location.href
+          "location": location.href.replace('/index.html', '')
         }]
       };
     </script>
-   
+  
     <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
     <script src="http://d3js.org/d3.v3.min.js"></script>
     
@@ -116,6 +116,21 @@
           }); 
           },10);
         });
+
+        /*dojo.connect( map, "onPanEnd", function(){
+          setTimeout(function(){
+          d3.selectAll('.park')[0].forEach(function( park ){
+            var root = d3.select('#'+park.id+'_root');
+            if (root[0][0]){
+              root.data()[0].x = park.cx.baseVal.value;
+              root.data()[0].px = park.cx.baseVal.value;
+              root.data()[0].y = park.cy.baseVal.value;
+              root.data()[0].py = park.cy.baseVal.value;
+              forces[park.id].resume();
+            }
+          }); 
+          },10);
+        });*/
           
         dojo.connect(layer, "onLoad", function(lyr) {
             lyr._render();
