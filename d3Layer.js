@@ -1,8 +1,19 @@
-dojo.provide("modules.d3Layer");
-
-dojo.require("esri.layers.graphics");
-
-dojo.declare("modules.d3Layer", esri.layers.GraphicsLayer, {
+define([
+  "dojo/_base/declare", "dojo/_base/connect", "dojo/_base/array",
+  "dojo/dom-construct", "dojo/dom-style", "dojo/number",
+  "esri/lang", "esri/domUtils",
+  "esri/SpatialReference", "esri/geometry/Point", "esri/layers/layer", "esri/layers/GraphicsLayer"
+], function(
+  declare, connect, arrayUtils,
+  domConstruct, domStyle, number,
+  esriLang, domUtils,
+  SpatialReference, Point, Layer, Graphics
+) {
+  var d3Layer = declare([Graphics], {
+    // Doc: http://docs.dojocampus.org/dojo/declare#chaining
+    "-chains-": {
+      constructor: "manual"
+    },
 
     constructor: function(url, options) {
       var self = this;
@@ -139,4 +150,8 @@ dojo.declare("modules.d3Layer", esri.layers.GraphicsLayer, {
     hover: function() {},
     exit: function() {},
     select: function() {}
+  });
+
+  return d3Layer;
+
 });

@@ -5,56 +5,73 @@
     <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9" />
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
     <title>MLB Payroll</title>
-    <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css" />
+    <link rel="stylesheet" href="https://js.arcgis.com/3.8/js/esri/css/esri.css" />
     <link rel="stylesheet" href="css/bootstrap.css"></link>
     <link rel="stylesheet" href="css/mlb.css"></link>
     <script>
-      var dojoConfig = {
-        parseOnLoad: true,
-        packages: [{
-          "name": "modules",
-          "location": location.href.replace('/index.html', '')
-        }]
+      var dojoConfig = { 
+        paths: {
+          modules: location.pathname.replace(/\/[^/]+$/, "")
+        }
       };
     </script>
   
-    <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
+    <!--script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script-->
     <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="https://js.arcgis.com/3.8compact/"></script>
     
     <script>
+
+      require([ "esri/map","dojo/parser", "dojo/_base/connect", "modules/d3Layer", "dojo/domReady!"], function( Map, parser, connect, d3Layer){
+        parser.parse();
+
+
+         // hook up elevation slider events
+        map = new Map("map", {
+          center: [-96, 36.428],
+          zoom: 4,
+          basemap: "gray"
+        });
+
+        map.on("load", mapLoaded);
+
+        function mapLoaded() {
       
-      var ranks = {
-        "Astros" : 30, 
-        "Marlins" : 29,
-        "Pirates" :28,
-        "Athletics": 27,
-        "Rays" : 26, 
-        "Padres" : 25,
-        "Indians" : 24,
-        "Mariners" : 23,
-        "Brewers" : 22,
-        "Rockies" : 21,
-        "City Royals" : 20,
-        "Twins" : 19,
-        "Mets" : 18,
-        "Braves" : 17,
-        "Diamondbacks" : 16,
-        "Orioles" : 15,
-        "Cubs" : 14,
-        "Reds" : 13,  
-        "Nationals" : 12,
-        "Blue Jays" : 11,
-        "Cardinals" : 10,
-        "White Sox" : 9, 
-        "Rangers" : 8, 
-        "Giants" : 7,
-        "Red Sox" : 6, 
-        "Tigers" : 5, 
-        "Angels" : 4, 
-        "Phillies" : 3, 
-        "Yankees" : 2, 
-        "Dodgers" : 1 
-      }
+          var ranks = {
+            "Astros" : 30, 
+            "Marlins" : 29,
+            "Pirates" :28,
+            "Athletics": 27,
+            "Rays" : 26, 
+            "Padres" : 25,
+            "Indians" : 24,
+            "Mariners" : 23,
+            "Brewers" : 22,
+            "Rockies" : 21,
+            "City Royals" : 20,
+            "Twins" : 19,
+            "Mets" : 18,
+            "Braves" : 17,
+            "Diamondbacks" : 16,
+            "Orioles" : 15,
+            "Cubs" : 14,
+            "Reds" : 13,  
+            "Nationals" : 12,
+            "Blue Jays" : 11,
+            "Cardinals" : 10,
+            "White Sox" : 9, 
+            "Rangers" : 8, 
+            "Giants" : 7,
+            "Red Sox" : 6, 
+            "Tigers" : 5, 
+            "Angels" : 4, 
+            "Phillies" : 3, 
+            "Yankees" : 2, 
+            "Dodgers" : 1 
+          }
+
+          var forces = {};
+
       
       var payroll = d3.scale.quantile()
         .domain([50000000, 200000000])
@@ -64,27 +81,15 @@
         .domain([200000, 20000000])
         .range([5, 10, 15, 20]);
 
-      var forces = {};
 
-      dojo.require("esri.map");
-      dojo.require("modules.d3Layer");
-
-      dojo.ready(function(){
-        
-        map = new esri.Map("map",{
-          basemap: "gray",
-          center: [-96, 36.428],
-          zoom: 4
-        });
-
-        layer = new modules.d3Layer('data/mlb_salaries.json', {
+        layer = new d3Layer('data/mlb_salaries.json', {
           attrs: [
             { key: 'r', value: function(d){ return payroll(d.properties.team.payroll); } },
             { key: 'id', value: function(d){ return d.properties.team.name.replace(/\s/g,''); } },
             { key: 'class', value: 'park' }
           ],
           type: 'circle'
-        }); 
+        });
         map.addLayer(layer);
 
         d3.select('body').append('div')
@@ -102,39 +107,40 @@
             }
           });
 
-        dojo.connect( map, "onZoomEnd", function(){
-          setTimeout(function(){
-          d3.selectAll('.park')[0].forEach(function( park ){
-            var root = d3.select('#'+park.id+'_root');
-            if (root[0][0]){
-              root.data()[0].x = park.cx.baseVal.value;
-              root.data()[0].px = park.cx.baseVal.value;
-              root.data()[0].y = park.cy.baseVal.value;
-              root.data()[0].py = park.cy.baseVal.value;
-              forces[park.id].start();
-            }
-          }); 
-          },10);
-        });
+          map.on("zoomEnd", function(){
+            setTimeout(function(){
+            d3.selectAll('.park')[0].forEach(function( park ){
+              var root = d3.select('#'+park.id+'_root');
+              if (root[0][0]){
+                root.data()[0].x = park.cx.baseVal.value;
+                root.data()[0].px = park.cx.baseVal.value;
+                root.data()[0].y = park.cy.baseVal.value;
+                root.data()[0].py = park.cy.baseVal.value;
+                forces[park.id].start();
+              }
+            }); 
+            },10);
+          });
 
-        /*dojo.connect( map, "onPanEnd", function(){
-          setTimeout(function(){
-          d3.selectAll('.park')[0].forEach(function( park ){
-            var root = d3.select('#'+park.id+'_root');
-            if (root[0][0]){
-              root.data()[0].x = park.cx.baseVal.value;
-              root.data()[0].px = park.cx.baseVal.value;
-              root.data()[0].y = park.cy.baseVal.value;
-              root.data()[0].py = park.cy.baseVal.value;
-              forces[park.id].resume();
-            }
-          }); 
-          },10);
-        });*/
+          map.on("panEnd", function(){
+            setTimeout(function(){
+            d3.selectAll('.park')[0].forEach(function( park ){
+              var root = d3.select('#'+park.id+'_root');
+              if (root[0][0]){
+                root.data()[0].x = park.cx.baseVal.value;
+                root.data()[0].px = park.cx.baseVal.value;
+                root.data()[0].y = park.cy.baseVal.value;
+                root.data()[0].py = park.cy.baseVal.value;
+                forces[park.id].resume();
+              }
+            }); 
+            },10);
+          });
+
           
-        dojo.connect(layer, "onLoad", function(lyr) {
-            lyr._render();
-
+          layer.on("load", function(lyr) {
+            layer._render();
+            
             d3.selectAll('.park')
               .on('mouseover', function( dot ){
                 d3.select('#salary').style('display', 'none');
@@ -222,7 +228,7 @@
                   var force = d3.layout.force()
                     .on("tick", tick)
                     
-                  var vis = lyr._element().append("g")
+                  var vis = layer._element().append("g")
                       .attr('class', 'hover-force')
                       .attr('id', city);
                   
@@ -320,7 +326,9 @@
                 
             }
           });
-        });
+        }
+      });
+        //});
 
     </script>
     
@@ -372,8 +380,5 @@
         </div>
       </div>
     </div>
-    <!--div id="show_hide" style="position:absolute; bottom:10px; left: 10px; z-index:1">
-      <span class='btn grp_button'> Show All </span>
-    </div-->
   </body>
 </html>
