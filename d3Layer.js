@@ -57,6 +57,7 @@ define([
     _bind: function(map){
       this._connects = [];
       this._connects.push( dojo.connect( this._map, "onZoomEnd", this, this._reset ) );
+      this._connects.push( dojo.connect( this._map, "onPanEnd", this, this._reset ) );
     },
 
     _project: function(x){

@@ -107,7 +107,7 @@
             }
           });
 
-          map.on("zoomEnd", function(){
+          map.on("zoom-end", function(){
             setTimeout(function(){
             d3.selectAll('.park')[0].forEach(function( park ){
               var root = d3.select('#'+park.id+'_root');
@@ -122,7 +122,7 @@
             },10);
           });
 
-          map.on("panEnd", function(){
+          map.on("pan-end", function(){
             setTimeout(function(){
             d3.selectAll('.park')[0].forEach(function( park ){
               var root = d3.select('#'+park.id+'_root');
